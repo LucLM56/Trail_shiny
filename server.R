@@ -16,7 +16,7 @@ shinyServer(function(input, output) {
         
         histo <- ggplot(data, aes(x = age))+
             geom_histogram(bins = input$bins, color="red", fill = "red")+
-            labs(title = "Répartition des runners par classe d'âge",y = "Effectif")
+            labs(title = "Repartition des runners par classe d'age",y = "Effectif")
         
         ggplotly(histo)
     })
@@ -27,7 +27,7 @@ shinyServer(function(input, output) {
         data_f <- data[data$gender=="W",]
         histo <- ggplot(data_f, aes(x = age))+
             geom_histogram(bins = input$bins, color="red", fill = "red")+
-            labs(title = "Répartition des runners par classe d'âge",y = "Effectif")
+            labs(title = "Repartition des runners par classe d'age",y = "Effectif")
         
         ggplotly(histo)
     })
@@ -38,10 +38,37 @@ shinyServer(function(input, output) {
         data_h <- data[data$gender=="M",]
         histo <- ggplot(data_h, aes(x = age))+
             geom_histogram(bins = input$bins, color="red", fill = "red")+
-            labs(title = "Répartition des runners par classe d'âge",y = "Effectif")
+            labs(title = "Repartition des runners par classe d'age",y = "Effectif")
             
         
         ggplotly(histo)
+    })
+    
+    
+    output$map<- renderLeaflet({
+        # Creation de la fonction de palette numérique sur nos densités
+        pal <- colorBin(
+            palette = "Blues",
+            domain = cartemonde$nb_runner
+            )
+        
+        #Carte
+        map_regions <- leaflet() %>%
+            addTiles() %>%
+            # polygone des regions
+            addPolygons(
+                data = cartemonde, 
+                label = ~NAME,
+                popup = ~paste0("Nombre de coureurs : ", nb_runner), #Affichage après un clique sur le pays
+                fill = TRUE, 
+                # Application de la fonction palette
+                fillColor = ~pal(nb_runner),
+                fillOpacity = 0.8,
+                highlightOptions = highlightOptions(color = "white", weight = 2))%>%
+            addLegend(
+                title = "Nombre de coureurs ",
+                pal = pal, values = cartemonde$nb_runner)
+        map_regions
     })
     
 })

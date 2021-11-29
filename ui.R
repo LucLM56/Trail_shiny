@@ -32,7 +32,16 @@ shinyUI(fluidPage(
                      )
                  )
         ),
-        tabPanel("Onglet2")
+        tabPanel("Carte",
+                 sidebarLayout(
+                     sidebarPanel(
+                     ),
+                     mainPanel(
+                         h3("Nombre de coureurs par pays"),
+                         leafletOutput("map")
+                     )
+                 )
+        )
     ))
     
 )
