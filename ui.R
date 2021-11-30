@@ -35,9 +35,10 @@ shinyUI(fluidPage(
         tabPanel("Carte",
                  sidebarLayout(
                      sidebarPanel(
+                         radioButtons("var", "Indicateur", c("Age_moyen", "nb_runner", "classement_moyen"))
                      ),
                      mainPanel(
-                         h3("Nombre de coureurs par pays"),
+                         h3("Carte"),
                          leafletOutput("map")
                      )
                  )

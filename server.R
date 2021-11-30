@@ -45,11 +45,14 @@ shinyServer(function(input, output) {
     })
     
     
+    
     output$map<- renderLeaflet({
+        indicateur = input$var
+        base <- eval(parse(text=paste("cartemonde$", indicateur, sep = "")))
         # Creation de la fonction de palette numérique sur nos densités
         pal <- colorBin(
             palette = "Blues",
-            domain = cartemonde$nb_runner
+            domain = base
             )
         
         #Carte
@@ -59,16 +62,19 @@ shinyServer(function(input, output) {
             addPolygons(
                 data = cartemonde, 
                 label = ~NAME,
-                popup = ~paste0("Nombre de coureurs : ", nb_runner), #Affichage après un clique sur le pays
+                popup = ~paste0(indicateur, " : ", base), #Affichage après un clique sur le pays
                 fill = TRUE, 
                 # Application de la fonction palette
-                fillColor = ~pal(nb_runner),
+                fillColor = ~pal(base),
                 fillOpacity = 0.8,
                 highlightOptions = highlightOptions(color = "white", weight = 2))%>%
             addLegend(
-                title = "Nombre de coureurs ",
-                pal = pal, values = cartemonde$nb_runner)
+                title = indicateur,
+                pal = pal, values = base)
         map_regions
     })
     
 })
+
+#Problème : Error in cut.default(x, binsToUse, labels = FALSE, include.lowest = TRUE,  : 
+        #'x' doit être numérique
