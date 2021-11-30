@@ -15,7 +15,6 @@ setwd(path)
 #Importation de deux bases de données et du fond de carte
 data <- read.csv2("data_runner.csv")
 data_nation <- read.csv2("data_nation.csv", sep=",")
-data_nation[is.na(data_nation)] <- 0
 data_nation$Age_moyen <- as.numeric(data_nation$Age_moyen)
 
 cartemonde <- readOGR(dsn = path,
@@ -23,6 +22,6 @@ cartemonde <- readOGR(dsn = path,
                       
 #Récupération des données à l'échelle nationnale pour la carte
 cartemonde <- sp::merge(cartemonde,data_nation,all.x=T, by.x = 'ISO3',by.y='nationality')
-cartemonde@data[is.na(cartemonde@data)] <- 0
+
 
 

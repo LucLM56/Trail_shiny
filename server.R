@@ -51,7 +51,7 @@ shinyServer(function(input, output) {
         base <- eval(parse(text=paste("cartemonde$", indicateur, sep = "")))
         # Creation de la fonction de palette numérique sur nos densités
         pal <- colorBin(
-            palette = "Blues",
+            palette = "viridis",
             domain = base
             )
         
@@ -62,7 +62,7 @@ shinyServer(function(input, output) {
             addPolygons(
                 data = cartemonde, 
                 label = ~NAME,
-                popup = ~paste0(indicateur, " : ", base), #Affichage après un clique sur le pays
+                popup = ~paste0(indicateur, " : ", base, "<br/>", "test"), #Affichage après un clique sur le pays
                 fill = TRUE, 
                 # Application de la fonction palette
                 fillColor = ~pal(base),
@@ -75,6 +75,3 @@ shinyServer(function(input, output) {
     })
     
 })
-
-#Problème : Error in cut.default(x, binsToUse, labels = FALSE, include.lowest = TRUE,  : 
-        #'x' doit être numérique
