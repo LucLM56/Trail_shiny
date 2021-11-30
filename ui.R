@@ -35,7 +35,7 @@ shinyUI(fluidPage(
         tabPanel("Carte",
                  sidebarLayout(
                      sidebarPanel(
-                         radioButtons("var", "Indicateur : ", c("Age_moyen", "nb_runner", "classement_moyen"))
+                         radioButtons("var", "Indicateur : ", c("Age_moyen", "nb_runner", "classement_moyen"),choiceNames = c("Age moyen", "Nombre de runners", "Classement moyen"))
                      ),
                      mainPanel(
                          h3("Carte"),
@@ -46,3 +46,5 @@ shinyUI(fluidPage(
     ))
     
 )
+
+#Voir choicenames et choicevalues : https://shiny.rstudio.com/reference/shiny/1.6.0/radioButtons.html
