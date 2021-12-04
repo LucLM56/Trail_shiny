@@ -51,9 +51,15 @@ shinyServer(function(input, output) {
         base <- eval(parse(text=paste("cartemonde$", indicateur, sep = "")))
         # Creation de la fonction de palette numérique sur nos densités
         pal <- colorBin(
-            palette = "viridis",
+            palette = "Blues",
             domain = base
             )
+        
+        observeEvent(input$map_shape_click, { # update the location selectInput on map clicks
+            p <- input$map_shape_click
+            country <- maps::map.where(database = "world", p$lng, p$lat)
+            print(country)
+        })
         
         #Carte
         map_regions <- leaflet() %>%
@@ -61,17 +67,18 @@ shinyServer(function(input, output) {
             # polygone des regions
             addPolygons(
                 data = cartemonde, 
-                label = ~NAME,
-                popup = ~paste0(indicateur, " : ", base, "<br/>", "test"), #Affichage après un clique sur le pays
+                weight = 0.25,
+                label = ~mytext,
+                popup = ~paste0(indicateur, " : ", round(base,2)), #Affichage après un clique sur le pays
                 fill = TRUE, 
                 # Application de la fonction palette
                 fillColor = ~pal(base),
-                fillOpacity = 0.8,
-                highlightOptions = highlightOptions(color = "white", weight = 2))%>%
+                fillOpacity = 2,
+                highlightOptions = highlightOptions(color = "white", weight = 3))%>%
             addLegend(
                 title = indicateur,
-                pal = pal, values = base)
-        map_regions
+                position = "bottomleft",
+                pal = pal, values = base)%>%
+            setView(lng = -1.638606, lat = 27.453093, zoom = 1)#Bout-de-bois au centre (47 au lieu de 27...)
     })
-    
 })
