@@ -19,7 +19,7 @@ shinyUI(fluidPage(
                          sliderInput("bins",
                                      "Nombre de classe de l'histogramme : ",
                                      min = 4,
-                                     max = 50,
+                                     max = 40,
                                      value = 15)
                          
                      ), 
@@ -35,16 +35,43 @@ shinyUI(fluidPage(
         tabPanel("Carte",
                  sidebarLayout(
                      sidebarPanel(
-                         radioButtons("var", "Indicateur : ", choiceValues = c("Age_moyen", "nb_runner", "classement_moyen"),choiceNames = c("Age moyen", "Nombre de runners", "Classement moyen"))
+                         radioButtons("var",
+                                      "Indicateur : ",
+                                      choiceValues = c("Age_moyen", "nb_runner", "classement_moyen"),
+                                      choiceNames = c("Age moyen", "Nombre de runners", "Classement moyen")),
+                         radioButtons("col", 
+                                      "Palette de couleur : ", 
+                                      choiceValues = c( "viridis","Oranges","Greens"),
+                                      choiceNames = c("Viridis", "Orange", "Vert"))
                      ),
                      mainPanel(
                          h3("Carte"),
                          leafletOutput("map")
                      )
                  )
-        )
+        ),
+        tabPanel("Vainqueurs",
+                 sidebarLayout(
+                     sidebarPanel(
+                         selectInput("pays", "Choisir le pays de la course : ", 
+                                     choices = levels(as.factor(data$country)),
+                                     selected = NULL, 
+                                     multiple = FALSE,
+                                     width="450px"),
+                         selectInput("event", "Choisir l'Evenement : ", 
+                                     choices = NULL,
+                                     selected = NULL, 
+                                     multiple = FALSE,
+                                     width="450px")
+                     ),
+                     mainPanel(
+                         h3("Liste des vainqueurs"),
+                         tableOutput("table_event")
+                         
+                     )
+                 )
+                 )
     ))
     
 )
 
-#Voir choicenames et choicevalues : https://shiny.rstudio.com/reference/shiny/1.6.0/radioButtons.html

@@ -10,12 +10,12 @@
 #Server - Projet Trail
 
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+shinyServer(function(input, output,session) {
     
     output$hist_age_full <- renderPlotly({
         
         histo <- ggplot(data, aes(x = age))+
-            geom_histogram(bins = input$bins, color="red", fill = "red")+
+            geom_histogram(bins = input$bins, color="black", fill = "blue")+
             labs(title = "Repartition des runners par classe d'age",y = "Effectif")
         
         ggplotly(histo)
@@ -26,7 +26,7 @@ shinyServer(function(input, output) {
         
         data_f <- data[data$gender=="W",]
         histo <- ggplot(data_f, aes(x = age))+
-            geom_histogram(bins = input$bins, color="red", fill = "red")+
+            geom_histogram(bins = input$bins, color="black", fill = "blue")+
             labs(title = "Repartition des runners par classe d'age",y = "Effectif")
         
         ggplotly(histo)
@@ -37,7 +37,7 @@ shinyServer(function(input, output) {
         
         data_h <- data[data$gender=="M",]
         histo <- ggplot(data_h, aes(x = age))+
-            geom_histogram(bins = input$bins, color="red", fill = "red")+
+            geom_histogram(bins = input$bins, color="black", fill = "blue")+
             labs(title = "Repartition des runners par classe d'age",y = "Effectif")
             
         
@@ -49,9 +49,11 @@ shinyServer(function(input, output) {
     output$map<- renderLeaflet({
         indicateur = input$var
         base <- eval(parse(text=paste("cartemonde$", indicateur, sep = "")))
+        col = input$col
         # Creation de la fonction de palette numérique sur nos densités
         pal <- colorBin(
-            palette = "Blues",
+            palette = col,
+            reverse=T,
             domain = base
             )
         
@@ -80,5 +82,34 @@ shinyServer(function(input, output) {
                 position = "bottomleft",
                 pal = pal, values = base)%>%
             setView(lng = -1.638606, lat = 27.453093, zoom = 1)#Bout-de-bois au centre (47 au lieu de 27...)
+    })
+    
+    observeEvent(input$pays, {
+        pays = input$pays
+        df_winner <- data %>% 
+            select(rank, runner, time, age, nationality, event, country, date) %>%
+            filter(country == pays) %>%
+            group_by(date)
+        
+        EVENT = levels(as.factor(df_winner$event))
+        updateSelectInput(session = session, inputId = "event", choices = EVENT)
+    })
+    
+    observe({
+        input$pays
+        vars <- all.vars(parse(text=as.character(input$inBody)))
+        vars <- as.list(vars)
+        updateSelectInput(session = session, inputId = "inVar", choices = vars)
+    })
+    
+    observeEvent(input$event, {
+        Event = input$event
+        df_winner <- data %>% 
+            select(date, runner, gender, nationality, age, time, rank , event) %>% 
+            filter( event == Event & rank == 1) %>%
+            arrange(substring(date, 1,4)) %>%
+            rename(Coureur = runner, Genre = gender, Temps =time, Age = age, Nationnalite = nationality, Date = date)
+        
+        output$table_event<- renderTable(df_winner[,-c(7,8)]) 
     })
 })
