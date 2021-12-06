@@ -25,9 +25,15 @@ shinyUI(fluidPage(
                      ), 
                      mainPanel(
                          tabsetPanel(
-                             tabPanel("TOUS", plotlyOutput("hist_age_full")), 
-                             tabPanel("FEMME", plotlyOutput("hist_age_femme")), 
-                             tabPanel("HOMME", plotlyOutput("hist_age_homme"))
+                             tabPanel("TOUS", 
+                                      plotlyOutput("hist_age_full"),
+                                      br(),
+                                      br(),
+                                      plotlyOutput("piechart")), 
+                             tabPanel("FEMME", 
+                                      plotlyOutput("hist_age_femme")), 
+                             tabPanel("HOMME", 
+                                      plotlyOutput("hist_age_homme"))
                          )
                      )
                  )
@@ -70,7 +76,27 @@ shinyUI(fluidPage(
                          
                      )
                  )
+                 ),
+        
+        tabPanel("Evolution",
+                 sidebarLayout(
+                     sidebarPanel(
+                         radioButtons("indic_evol", "Indicateur : ", 
+                                     choiceValues = c("age_moyen","distance_moyenne","time_moyen"),
+                                     choiceNames = c("Age Moyen (an)", "Distance (km)" , "Temps de course (seconde)")),
+                         dateRangeInput('dateRange',
+                                        label = 'Selectionnez une periode : ',
+                                        start = "2012-01-14", 
+                                        end = "2014-10-23",
+                                        min = "2012-01-14",
+                                        max = "2014-10-23")
+                    ),
+                     mainPanel(
+                         plotlyOutput("evol")
+                     )
                  )
+            
+        )
     ))
     
 )

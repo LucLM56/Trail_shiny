@@ -15,7 +15,7 @@ shinyServer(function(input, output,session) {
     output$hist_age_full <- renderPlotly({
         
         histo <- ggplot(data, aes(x = age))+
-            geom_histogram(bins = input$bins, color="black", fill = "blue")+
+            geom_histogram(bins = input$bins, color="white", fill = "blue")+
             labs(title = "Repartition des runners par classe d'age",y = "Effectif")
         
         ggplotly(histo)
@@ -26,7 +26,7 @@ shinyServer(function(input, output,session) {
         
         data_f <- data[data$gender=="W",]
         histo <- ggplot(data_f, aes(x = age))+
-            geom_histogram(bins = input$bins, color="black", fill = "blue")+
+            geom_histogram(bins = input$bins, color="white", fill = "blue")+
             labs(title = "Repartition des runners par classe d'age",y = "Effectif")
         
         ggplotly(histo)
@@ -37,9 +37,9 @@ shinyServer(function(input, output,session) {
         
         data_h <- data[data$gender=="M",]
         histo <- ggplot(data_h, aes(x = age))+
-            geom_histogram(bins = input$bins, color="black", fill = "blue")+
+            geom_histogram(bins = input$bins, color="white", fill = "blue")+
             labs(title = "Repartition des runners par classe d'age",y = "Effectif")
-            
+        
         
         ggplotly(histo)
     })
@@ -55,7 +55,7 @@ shinyServer(function(input, output,session) {
             palette = col,
             reverse=T,
             domain = base
-            )
+        )
         
         observeEvent(input$map_shape_click, { # update the location selectInput on map clicks
             p <- input$map_shape_click
@@ -112,4 +112,86 @@ shinyServer(function(input, output,session) {
         
         output$table_event<- renderTable(df_winner[,-c(7,8)]) 
     })
+    
+    output$piechart <- renderPlotly({
+        data_h <- data[data$gender=="M",]
+        data_f <- data[data$gender=="W",]
+        df <- data.frame(
+            gender = c("Hommes", "Femmes"),
+            nb_gender = c(nrow(data_h),nrow(data_f)))
+        
+        fig <- plot_ly(df, labels = ~gender, 
+                       values = ~nb_gender, 
+                       type = 'pie',
+                       textposition = 'inside',
+                       textinfo = 'label+percent',
+                       marker = list(colors = c("blue","red"),
+                                     line = list(color = '#FFFFFF', width = 1)),
+                       showlegend = FALSE) %>% 
+            layout(title = 'Repartition des participants selon le genre',
+                   xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                   yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+        
+        fig
+    })
+    
+    observeEvent(input$indic_evol,{
+        
+        titre = input$Titre
+        data$date_clean <- as.POSIXct(data$date, 
+                                      tz = "UTC", 
+                                      format = "%Y-%m-%d")
+        data$gender[data$gender=="M"] <-"Homme"
+        data$gender[data$gender=="W"] <-"Femme"
+        
+        evol <- data %>%
+            select(date_clean, gender, age, distance, time_in_seconds) %>%
+            group_by(date_clean, gender) %>%
+            summarise(age_moyen = round(mean(age, na.rm = TRUE),2),
+                      distance_moyenne = round(mean(distance, na.rm = TRUE),2),
+                      time_moyen = round(mean(time_in_seconds, na.rm = TRUE),2)) %>%
+            filter(distance_moyenne > 0) %>% drop_na 
+        
+        tempo <- ggplot(data = evol, aes_string(x = "date_clean", y = input$indic_evol, color = "gender"))+
+            geom_line( size = 1) +
+            labs(title = "", x = "Date", y = "", color = "Genre\n") +
+            scale_color_manual(values = c("red", "blue"))
+        
+        
+        output$evol <- renderPlotly({tempo})
+        
+    })
+    
+    observeEvent(input$dateRange,{   
+        
+        date_start = format(input$dateRange[1])
+        date_end = format(input$dateRange[2])
+        data$date_clean <- as.POSIXct(data$date, 
+                                      tz = "UTC", 
+                                      format = "%Y-%m-%d")
+        data$gender[data$gender=="M"] <-"Homme"
+        data$gender[data$gender=="W"] <-"Femme"
+        
+        evol <- data %>%
+            select(date_clean, gender, age, distance, time_in_seconds) %>%
+            group_by(date_clean, gender) %>%
+            summarise(age_moyen = round(mean(age, na.rm = TRUE),2),
+                      distance_moyenne = round(mean(distance, na.rm = TRUE),2),
+                      time_moyen = round(mean(time_in_seconds, na.rm = TRUE),2)) %>%
+            filter(distance_moyenne > 0 & date_clean >= date_start & date_clean<= date_end) %>% 
+            drop_na 
+        
+        tempo <- ggplot(data = evol, aes_string(x = "date_clean", y = input$indic_evol, color = "gender"))+
+            geom_line( size = 1) +
+            labs(title = "", x = "Date", y = "", color = "Genre\n") +
+            scale_color_manual(values = c("red", "blue"))
+        
+        
+        output$evol <- renderPlotly({tempo})
+        
+    })
+
+    
 })
+
+

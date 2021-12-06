@@ -11,6 +11,8 @@ library(stringr)
 library(maps)
 library(dplyr)
 library(stringr)
+library(shinyWidgets)
+library(tidyr)
 
 #Préciser le chemin d'accès aux données ci-dessous :
 #path = "C:/Users/Antoi/OneDrive/Documents/Master 2/Rshiny/Projet/Projet_rshiny/"
