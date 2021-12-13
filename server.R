@@ -135,37 +135,11 @@ shinyServer(function(input, output,session) {
         fig
     })
     
-    observeEvent(input$indic_evol,{
-        
-        titre = input$Titre
-        data$date_clean <- as.POSIXct(data$date, 
-                                      tz = "UTC", 
-                                      format = "%Y-%m-%d")
-        data$gender[data$gender=="M"] <-"Homme"
-        data$gender[data$gender=="W"] <-"Femme"
-        
-        evol <- data %>%
-            select(date_clean, gender, age, distance, time_in_seconds) %>%
-            group_by(date_clean, gender) %>%
-            summarise(age_moyen = round(mean(age, na.rm = TRUE),2),
-                      distance_moyenne = round(mean(distance, na.rm = TRUE),2),
-                      time_moyen = round(mean(time_in_seconds, na.rm = TRUE),2)) %>%
-            filter(distance_moyenne > 0) %>% drop_na 
-        
-        tempo <- ggplot(data = evol, aes_string(x = "date_clean", y = input$indic_evol, color = "gender"))+
-            geom_line( size = 1) +
-            labs(title = "", x = "Date", y = "", color = "Genre\n") +
-            scale_color_manual(values = c("red", "blue"))
-        
-        
-        output$evol <- renderPlotly({tempo})
-        
-    })
-    
-    observeEvent(input$dateRange,{   
+    observeEvent(c(input$dateRange,input$indic_evol),{   
         
         date_start = format(input$dateRange[1])
         date_end = format(input$dateRange[2])
+        data$distance <- as.numeric(data$distance)
         if (date_end<=date_start){
             sendSweetAlert(session, 
                            "Erreur",

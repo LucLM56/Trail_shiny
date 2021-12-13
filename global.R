@@ -19,7 +19,7 @@ library(tidyr)
 path = "D:/Dossiers/Etudes/M2 EKAP/R shiny/TRAIL"
 setwd(path)
 #Importation de deux bases de données et du fond de carte
-data <- read.csv2("data_runner.csv")
+data <- read.csv2("data_runner.csv",sep=",")
 data_nation <- read.csv2("data_nation.csv", sep=",")
 data_nation$Age_moyen <- as.numeric(data_nation$Age_moyen)
 

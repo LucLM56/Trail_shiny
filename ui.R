@@ -76,26 +76,26 @@ shinyUI(fluidPage(
                          
                      )
                  )
-                 ),
+        ),
         
         tabPanel("Evolution",
                  sidebarLayout(
                      sidebarPanel(
                          radioButtons("indic_evol", "Indicateur : ", 
-                                     choiceValues = c("age_moyen","distance_moyenne","time_moyen"),
-                                     choiceNames = c("Age Moyen (an)", "Distance (km)" , "Temps de course (seconde)")),
+                                      choiceValues = c("age_moyen","distance_moyenne","time_moyen"),
+                                      choiceNames = c("Age Moyen (an)", "Distance (km)" , "Temps de course (seconde)")),
                          dateRangeInput('dateRange',
                                         label = 'Selectionnez une periode : ',
                                         start = "2012-01-14", 
-                                        end = "2014-10-23",
+                                        end = "2021-09-03",
                                         min = "2012-01-14",
-                                        max = "2014-10-23")
-                    ),
+                                        max = "2021-09-03")
+                     ),
                      mainPanel(
                          plotlyOutput("evol")
                      )
                  )
-            
+                 
         )
     ))
     
