@@ -38,5 +38,5 @@ datapays$prop_femme = 100 - datapays$prop_homme
 head(datapays)
 
 #Exportation
-write.csv2(data,"data_runner.csv")
-write.csv2(datapays,"data_nation.csv")
+write.csv(data,"data_runner.csv", row.names = F)
+write.csv(datapays,"data_nation.csv", row.names = F)
